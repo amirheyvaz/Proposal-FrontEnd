@@ -1,24 +1,43 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import classes from './App.module.css';
+import {Switch , NavLink, Route } from 'react-router-dom';
+import {  Navbar , Nav } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import ProposalLogo from './Assets/Images/SBULogo.png';
+import Cartable from "./Containers/Cartable/Cartable";
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className={classes.App}>
+        <Navbar bg='light' expand='lg' fixed='top'  >
+                    <Navbar.Brand href="/">
+                        <img
+                            alt=""
+                            src={ProposalLogo}
+                            width="30"
+                            height="30"
+                            className="d-inline-block align-top"
+                        />{' '}
+                        سامانه پروپوزال
+                    </Navbar.Brand>
+                    <Navbar.Toggle />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="ml-auto">
+                        
+                        <NavLink  to="/" exact activeClassName="nav-link active" className="nav-link">
+                          خانه
+                        </NavLink>
+                        
+                        
+                        </Nav>
+                    </Navbar.Collapse>
+        </Navbar>
+       
+      <Switch>
+        <Route path="/" exact component={Cartable} />
+
+      </Switch>  
     </div>
   );
 }
