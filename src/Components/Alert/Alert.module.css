@@ -1,0 +1,8 @@
+.Alert{
+    width: 30%;
+    float: right !important;
+    margin-left: 68%;
+    position: fixed !important;
+    bottom: 20px;
+    margin-right: 2%;
+}

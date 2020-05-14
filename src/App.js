@@ -5,7 +5,7 @@ import {  Navbar , Nav } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProposalLogo from './Assets/Images/SBULogo.png';
 import Cartable from "./Containers/Cartable/Cartable";
-
+import LogIn from "./Containers/LogIn/LogIn";
 
 function App() {
   return (
@@ -36,7 +36,7 @@ function App() {
        
       <Switch>
         <Route path="/" exact component={Cartable} />
-
+        <Route path="/LogIn" exact component={LogIn} />
       </Switch>  
     </div>
   );

@@ -1,28 +1,23 @@
 import React , {Component} from "react";
-import classes from "./Cartable.module.css";
+import classes from "./LogIn.module.css";
 import Spinner from "../../Components/Spinner/Spinner";
 import { withRouter } from 'react-router-dom';
 import {connect} from 'react-redux';
 import *  as Actions from "../../Store/Actions";
 
-class Cartable extends Component{
+class LogIn extends Component{
 
     state = {
         loading : true
     };
 
     componentDidMount = () => {
-        if(!this.props.isAuthenticated){
-            this.props.history.push("/LogIn");
-        }
-        else{
-            
-        }
+        
     }
 
     render (){
         return (
-            <div className={classes.CartableContainer}>
+            <div className={classes.LogInContainer}>
                 <Spinner show={this.state.loading} />
 
             </div>            
@@ -46,4 +41,4 @@ const mapDispatchToProps = dispatch => {
 };
 
 
-export default connect(mapStateToProps , mapDispatchToProps)(withRouter(Cartable));
+export default connect(mapStateToProps , mapDispatchToProps)(withRouter(LogIn));
