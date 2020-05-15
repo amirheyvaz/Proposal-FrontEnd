@@ -10,7 +10,7 @@ import LogIn from "./Containers/LogIn/LogIn";
 function App() {
   return (
     <div className={classes.App}>
-        <Navbar bg='light' expand='lg' fixed='top'  >
+        <Navbar bg='light' expand='lg' fixed='top' >
                     <Navbar.Brand href="/">
                         <img
                             alt=""
@@ -28,6 +28,10 @@ function App() {
                         <NavLink  to="/" exact activeClassName="nav-link active" className="nav-link">
                           خانه
                         </NavLink>
+
+                        <NavLink  to="/LogOut" exact activeClassName="nav-link active" className="nav-link">
+                          خروج
+                        </NavLink>
                         
                         
                         </Nav>
@@ -35,8 +39,9 @@ function App() {
         </Navbar>
        
       <Switch>
-        <Route path="/" exact component={Cartable} />
         <Route path="/LogIn" exact component={LogIn} />
+        <Route path="/LogOut" exact component={LogIn} />
+        <Route path="/" exact component={Cartable} />
       </Switch>  
     </div>
   );

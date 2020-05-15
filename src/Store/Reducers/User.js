@@ -1,16 +1,16 @@
 import * as actionTypes from '../Actions/ActionTypes';
 
 const initialState = {
-    UserRole : null
+    UserInfo : null
 };
 
 const reducer = ( state = initialState, action ) => {
     switch ( action.type ) {
         
-        case actionTypes.SET_USERROLE:{
+        case actionTypes.SET_USERINFO : {
             return {
                 ...state,
-                UserRole : action.UserRole
+                UserInfo : action.UserInfo
             };
         }
         default:

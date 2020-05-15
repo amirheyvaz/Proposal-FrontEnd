@@ -5,4 +5,4 @@ export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 
 export const SET_AUTH_REDIRECT_PATH = 'SET_AUTH_REDIRECT_PATH';
 
-export const SET_USERROLE = 'SET_USERROLE';
+export const SET_USERINFO = 'SET_USERINFO';

@@ -69,6 +69,11 @@ class LogIn extends Component{
     }
 
     componentDidMount = () => {
+        if(this.props.isAuthenticated){
+            this.props.LogOutHandler();
+            this.props.history.push("/");
+            return;
+        }
         this.props.CheckAuthStatus();
         if(!this.props.isAuthenticated){
             this.setState({loading : false});
@@ -173,7 +178,8 @@ const mapStateToProps = state =>{
 const mapDispatchToProps = dispatch => {
     return {
         LogInHandler: (UserInfo) => dispatch(Actions.auth(UserInfo)) ,
-        CheckAuthStatus : () => dispatch(Actions.authCheckState())
+        CheckAuthStatus : () => dispatch(Actions.authCheckState()),
+        LogOutHandler : () => dispatch(Actions.logout())
     };
 };
 
