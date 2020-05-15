@@ -1,3 +1,37 @@
 .LogInContainer{
-    margin-top: 80px;
+    margin-top: 10%;
+}
+.Jumbotron{
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+    background-color: #f7f5f2;
+    box-shadow: 6px 6px 10px #ccc;
+    padding: 20px;
+
+}
+.inValidInput{
+    border: 1px solid red !important;
+}
+.Button[disabled]{
+    cursor: not-allowed;
+}
+.Button{
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.ButtonCol{
+    width: 100%;
+    text-align: center;
+}
+.LogInLabel{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    border: 0.5px solid black;
+    padding-right : 20px;
+    padding-left : 20px;
+    padding-top : 10px;
+    padding-bottom: 10px;
 }

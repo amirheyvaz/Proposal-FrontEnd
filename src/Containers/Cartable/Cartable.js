@@ -16,7 +16,7 @@ class Cartable extends Component{
             this.props.history.push("/LogIn");
         }
         else{
-            
+            this.props.LogOutHandler();
         }
     }
 
@@ -40,6 +40,7 @@ const mapStateToProps = state =>{
 
 const mapDispatchToProps = dispatch => {
     return {
+        LogOutHandler : () => dispatch(Actions.logout())
         //AddIngredientHandler: dispatch(Actions.authStart) ,
         //RemoveIngredientHandler: (IngType) => dispatch({type: actions.REMOVE_INGREDIENT , IngredientType: IngType}) 
     };

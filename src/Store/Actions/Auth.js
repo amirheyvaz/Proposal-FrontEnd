@@ -40,30 +40,28 @@ export const checkAuthTimeout = (expirationTime) => {
     };
 };
 
-export const auth = (email, password, isSignup) => {
+export const auth = (UserInfo) => {
     return dispatch => {
         dispatch(authStart());
-        const authData = {
-            email: email,
-            password: password,
-            returnSecureToken: true
-        };
-        let url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyB5cHT6x62tTe-g27vBDIqWcwQWBSj3uiY';
-        if (!isSignup) {
-            url = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyB5cHT6x62tTe-g27vBDIqWcwQWBSj3uiY';
-        }
-        axios.post(url, authData)
+        
+        let url = 'http://localhost:8002/api/Authentication/GetToken/' + UserInfo.Username + '/' + UserInfo.Password;
+        
+        axios.post(url)
             .then(response => {
-                console.log(response);
-                const expirationDate = new Date(new Date().getTime() + response.data.expiresIn * 1000);
-                localStorage.setItem('token', response.data.idToken);
+                const expirationTime = 90;
+                const expirationDate = new Date(new Date().getTime() + expirationTime * 60 * 1000);
+                localStorage.setItem('token', response.data);
                 localStorage.setItem('expirationDate', expirationDate);
-                localStorage.setItem('userId', response.data.localId);
-                dispatch(authSuccess(response.data.idToken, response.data.localId));
-                dispatch(checkAuthTimeout(response.data.expiresIn));
+                localStorage.setItem('userId', UserInfo.Username);
+                dispatch(authSuccess(response.data, UserInfo.Username));
+                dispatch(checkAuthTimeout(expirationTime * 60));
             })
             .catch(err => {
-                dispatch(authFail(err.response.data.error));
+                let error = "خطا در برقراری ارتباط با سرور"
+                if(err.response && err.response.status == 401){
+                    error = "نام کاربری یا رمز عبور وارد شده اشتباه است";
+                }
+                dispatch(authFail(error));
             });
     };
 };
