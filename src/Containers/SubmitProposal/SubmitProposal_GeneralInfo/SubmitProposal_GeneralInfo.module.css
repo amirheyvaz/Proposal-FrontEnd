@@ -1,0 +1,18 @@
+.SubmitProposal_GeneralInfo{
+    margin-top: 12% !important;
+    
+}
+.inValidInput{
+    border: 1px solid red !important;
+}
+.Button[disabled]{
+    cursor: not-allowed;
+}
+.Button{
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.ButtonCol{
+    width: 100%;
+    text-align: center;
+}

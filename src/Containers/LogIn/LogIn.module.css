@@ -5,10 +5,10 @@
     margin-left: auto;
     margin-right: auto;
     width: 40%;
-    background-color: #f7f5f2;
+    background-color: #f9f9f9;
     box-shadow: 6px 6px 10px #ccc;
     padding: 20px;
-
+    direction: rtl;
 }
 .inValidInput{
     border: 1px solid red !important;

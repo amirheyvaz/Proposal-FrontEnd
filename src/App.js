@@ -6,11 +6,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ProposalLogo from './Assets/Images/SBULogo.png';
 import Cartable from "./Containers/Cartable/Cartable";
 import LogIn from "./Containers/LogIn/LogIn";
+import SubmitProposal from "./Containers/SubmitProposal/SubmitProposal";
 
 function App() {
   return (
-    <div className={classes.App}>
-        <Navbar bg='light' expand='lg' fixed='top' >
+    <div>
+        <Navbar bg='light' expand='lg' fixed='top' className={classes.App}>
                     <Navbar.Brand href="/">
                         <img
                             alt=""
@@ -41,6 +42,7 @@ function App() {
       <Switch>
         <Route path="/LogIn" exact component={LogIn} />
         <Route path="/LogOut" exact component={LogIn} />
+        <Route path="/SubmitProposal" exact component={SubmitProposal} />
         <Route path="/" exact component={Cartable} />
       </Switch>  
     </div>

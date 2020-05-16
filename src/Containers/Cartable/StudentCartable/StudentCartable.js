@@ -5,18 +5,42 @@ import Spinner from "../../../Components/Spinner/Spinner";
 import { withRouter , Redirect } from 'react-router-dom';
 import {connect} from 'react-redux';
 import *  as Actions from "../../../Store/Actions";
-import { Col, Row , Container , Card , ListGroup} from 'react-bootstrap';
+import { Col, Row , Container , Card , ListGroup, Button} from 'react-bootstrap';
 
 class StudentCartable extends Component {
     
+    addProposalClickHandler = () => {
+        this.props.history.push("/SubmitProposal");
+    }
 
     render () {
         const RedirectVar = !this.props.isAuthenticated ? (<Redirect to="LogIn" />) : null;
-
+        const MainCartable = this.props.UserInfo.HasProposal ? null : (
+            <div style={{
+                textAlign : "center",
+                padding : "5px"
+            }}>
+                <h3 style={{
+                    marginBottom : "5%",
+                    padding : "5px"
+                }}>
+                    شما تا کنون پروپوزالی ثبت نکرده اید
+                </h3>
+                <div>
+                    <Button variant="primary" onClick={this.addProposalClickHandler}>
+                        ثبت پروپوزال کارشناسی ارشد
+                    </Button>
+                </div>
+            </div>
+        );
         return (
             <Container className={classes.StudentCartable}>
                 <Row>
-
+                    <Col md={8}>
+                        <div className={classes.Main}>
+                            {MainCartable}
+                        </div>
+                    </Col>
                     <Col md={4}>
                         <div className={classes.UserInfo}>
                             <Card>
@@ -35,11 +59,7 @@ class StudentCartable extends Component {
                             </Card>
                         </div>
                     </Col>
-                    <Col md={8}>
-                        <div className={classes.Main}>
-                            
-                        </div>
-                    </Col>
+                    
                 </Row>
                 {RedirectVar}
             </Container>
