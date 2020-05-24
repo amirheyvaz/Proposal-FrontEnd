@@ -103,7 +103,7 @@ class LogIn extends Component{
         
         return (
             <div className={classes.LogInContainer}>
-                <Spinner show={this.state.loading} />
+                <Spinner show={this.props.AuthLoading} />
                 <div className={classes.Jumbotron}>
                     <Container>
                         <Row>

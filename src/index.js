@@ -10,12 +10,14 @@ import thunk from 'redux-thunk';
 
 import authReducer from "./Store/Reducers/Auth";
 import UserReducer from "./Store/Reducers/User";
+import SubmitProposalReducer from "./Store/Reducers/SubmitProposal";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const rootReducer = combineReducers({
     auth: authReducer,
-    user: UserReducer
+    user: UserReducer,
+    SubmitProposal : SubmitProposalReducer
 });
 
 const store = createStore(rootReducer, composeEnhancers(

@@ -8,8 +8,12 @@ const Alert = (props) => {
     setTimeout(() => {
         setShow(false);
     }, props.CloseTimeout ? props.CloseTimeout : 5000);
+    let styleVar = {};
+    if(props.MarginLeft){
+        styleVar["marginLeft"] = props.MarginLeft;
+    }
     return(
-        <BootAlert className={classes.Alert} variant={props.Variant} show={show} onClose={() => setShow(false)} dismissible >
+        <BootAlert className={classes.Alert} style={styleVar} variant={props.Variant} show={show} onClose={() => setShow(false)} dismissible >
                     {props.Message}
         </BootAlert>
     );
@@ -18,7 +22,8 @@ const Alert = (props) => {
 Alert.propTypes = {
     Message : PropTypes.string,
     Variant : PropTypes.string,
-    CloseTimeout : PropTypes.number
+    CloseTimeout : PropTypes.number,
+    MarginLeft : PropTypes.string
 };
 
 export default Alert;

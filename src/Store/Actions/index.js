@@ -9,3 +9,6 @@ export {
 export {
     GetUserInfo
 } from "./User";
+export {
+    GetAllResearchTypes
+} from "./SubmitProposal";
