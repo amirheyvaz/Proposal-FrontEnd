@@ -51,6 +51,9 @@ class SubmitProposal_GeneralInfo extends Component{
     }
 
     KeywordsAddHandler = () => {
+        if(this.state.KeywordInput.value == ''){
+            return;
+        }
         let KeywordsVar = [...this.state.Keywords];
         KeywordsVar.push(this.state.KeywordInput.value);
         this.setState({

@@ -5,7 +5,7 @@ import * as actionTypes from './ActionTypes';
 
 export const GetUserInfo = (Username) => {
     return dispatch => {
-        let url = 'http://localhost:8002/api/Proposal/GetUserInfo/' + Username;
+        let url = 'http://localhost:7357/api/Proposal/GetUserInfo/' + Username;
         
         axios.get(url , {
             headers : {

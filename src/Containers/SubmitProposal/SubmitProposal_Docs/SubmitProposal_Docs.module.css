@@ -1,0 +1,24 @@
+.SubmitProposal_Docs{
+    margin-top: 12% !important;
+    
+}
+.inValidInput{
+    border: 1px solid red !important;
+}
+.Button[disabled]{
+    cursor: not-allowed;
+}
+
+.DIVROW{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+.ButtonROW{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    text-align: center;
+    width: 60%;
+    direction: rtl;
+}

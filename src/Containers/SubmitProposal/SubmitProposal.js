@@ -8,6 +8,8 @@ import * as ActionTypes from "../../Store/Actions/ActionTypes";
 import {Steps} from 'antd';
 
 import SubmitProposal_GeneralInfo from "./SubmitProposal_GeneralInfo/SubmitProposal_GeneralInfo";
+import SubmitProposal_Docs from "./SubmitProposal_Docs/SubmitProposal_Docs";
+import SubmitProposal_Finish from './SubmitProposal_Finish/SubmitProposal_Finish';
 
 const { Step } = Steps;
 
@@ -21,6 +23,12 @@ class SubmitProposal extends Component{
         const Cur = this.state.current;
         this.setState({
             current : Cur + 1 
+        });
+    }
+    SubmitProposal_BackHandler = () => {
+        const Cur = this.state.current;
+        this.setState({
+            current : Cur - 1 
         });
     }
 
@@ -38,7 +46,11 @@ class SubmitProposal extends Component{
                         <Step title="پایان" description="اتمام فرآیند ثبت" />
                 </Steps>
                 {RedirectVar}
-                {this.state.current == 0 ? <SubmitProposal_GeneralInfo NextClick={this.SubmitProposal_GeneralInfoHandler} /> : null}
+                {this.state.current == 0 ? <SubmitProposal_GeneralInfo NextClick={this.SubmitProposal_GeneralInfoHandler} /> : (
+                    this.state.current == 1 ? <SubmitProposal_Docs BackClick={this.SubmitProposal_BackHandler} NextClick={this.SubmitProposal_GeneralInfoHandler} /> : (
+                        this.state.current == 2 ? <SubmitProposal_Finish  /> : null
+                    )
+                )}
             </div>
         );
     }

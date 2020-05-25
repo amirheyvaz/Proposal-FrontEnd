@@ -10,5 +10,6 @@ export {
     GetUserInfo
 } from "./User";
 export {
-    GetAllResearchTypes
+    GetAllResearchTypes,
+    SendProposal
 } from "./SubmitProposal";

@@ -2,7 +2,10 @@ import * as actionTypes from '../Actions/ActionTypes';
 
 const initialState = {
     ResearchTypes : null,
-    Proposal_GeneralInfo : null
+    Proposal_GeneralInfo : null,
+    ProposalFile : null,
+    SendingError : '',
+    SendingPending : true
 };
 
 const reducer = ( state = initialState, action ) => {
@@ -18,6 +21,19 @@ const reducer = ( state = initialState, action ) => {
             return{
                 ...state,
                 Proposal_GeneralInfo : action.Proposal_GeneralInfo
+            };
+        }
+        case actionTypes.SET_FILE : {
+            return{
+                ...state,
+                ProposalFile : action.file
+            };
+        }
+        case actionTypes.SEND_PROPOSAL : {
+            return {
+                ...state,
+                SendingError : action.error,
+                SendingPending : action.result
             };
         }
         default:

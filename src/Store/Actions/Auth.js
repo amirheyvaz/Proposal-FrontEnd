@@ -44,7 +44,7 @@ export const auth = (UserInfo) => {
     return dispatch => {
         dispatch(authStart());
         
-        let url = 'http://localhost:8002/api/Authentication/GetToken/' + UserInfo.Username + '/' + UserInfo.Password;
+        let url = 'http://localhost:7357/api/Authentication/GetToken/' + UserInfo.Username + '/' + UserInfo.Password;
         
         axios.post(url)
             .then(response => {
