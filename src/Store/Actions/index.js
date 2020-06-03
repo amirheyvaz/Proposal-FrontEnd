@@ -14,5 +14,6 @@ export {
     SendProposal
 } from "./SubmitProposal";
 export {
-    GetProposal
+    GetProposal,
+    DeleteProposal
 } from './Proposal';

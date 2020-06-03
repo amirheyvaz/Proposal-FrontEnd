@@ -7,6 +7,7 @@ import ProposalLogo from './Assets/Images/SBULogo.png';
 import Cartable from "./Containers/Cartable/Cartable";
 import LogIn from "./Containers/LogIn/LogIn";
 import SubmitProposal from "./Containers/SubmitProposal/SubmitProposal";
+import '@progress/kendo-theme-default/dist/all.css';
 
 function App() {
   return (

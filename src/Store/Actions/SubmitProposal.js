@@ -19,7 +19,7 @@ export const GetAllResearchTypes = () => {
     };
 };
 
-export const SendProposal = (generalInfo , file) => {
+export const SendProposal = (generalInfo , file , message) => {
     return dispatch => {
         
         let url = 'http://localhost:7357/api/Proposal/UploadProposal/' + localStorage.getItem('userId');
@@ -39,6 +39,12 @@ export const SendProposal = (generalInfo , file) => {
         .then(response => {
             const d = response.data;
             dispatch({type : actionTypes.SEND_PROPOSAL , error : '' , result : !d});
+            message.Sucess({
+                content : "ثبت پروپوزال موفق بود",
+                style : {
+                    marginTop : "50px !important"
+                }
+            });
         })
         .catch(err => {
             console.log(err);

@@ -6,6 +6,7 @@ import *  as Actions from "../../../Store/Actions";
 import * as ActionTypes from "../../../Store/Actions/ActionTypes";
 import Spinner from '../../../Components/Spinner/Spinner';
 import Alert from '../../../Components/Alert/Alert';
+import { Descriptions, Badge , message} from 'antd';
 
 class SubmitProposal_Finish extends Component{
 
@@ -54,7 +55,7 @@ const mapStateToProps = state =>{
 
 const mapDispatchToProps = dispatch => {
     return {
-        StartSendingInfo : (generalInfo , file) => dispatch(Actions.SendProposal(generalInfo , file))
+        StartSendingInfo : (generalInfo , file) => dispatch(Actions.SendProposal(generalInfo , file , message))
     };
 };
 

@@ -1,7 +1,8 @@
 import * as actionTypes from '../Actions/ActionTypes';
 
 const initialState = {
-    Proposal : null
+    Proposal : null,
+    Proposals : []
 };
 
 const reducer = ( state = initialState, action ) => {
@@ -11,6 +12,12 @@ const reducer = ( state = initialState, action ) => {
             return {
                 ...state,
                 Proposal : action.Proposal
+            };
+        }
+        case actionTypes.DELETE_PROPOSAL : {
+            return {
+                ...state,
+                Proposal : null
             };
         }
         default:

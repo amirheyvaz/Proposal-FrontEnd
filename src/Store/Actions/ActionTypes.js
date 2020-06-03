@@ -15,3 +15,4 @@ export const SET_FILE = 'SET_FILE';
 export const SEND_PROPOSAL = 'SEND_PROPOSAL';
 
 export const GET_PROPOSAL = 'GET_PROPOSAL';
+export const DELETE_PROPOSAL = 'DELETE_PROPOSAL';

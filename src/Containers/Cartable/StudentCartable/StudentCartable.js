@@ -6,20 +6,20 @@ import { withRouter , Redirect } from 'react-router-dom';
 import {connect} from 'react-redux';
 import *  as Actions from "../../../Store/Actions";
 import { Col, Row , Container , Card , ListGroup, Button , Modal} from 'react-bootstrap';
-import { Descriptions, Badge } from 'antd';
+import { Descriptions, Badge , message} from 'antd';
 
 class StudentCartable extends Component {
     
     state = {
         HistoryModalShow : false,
         KeywordsModalShow : false,
-        CommentModalShow : false
+        CommentModalShow : false,
+        ConfirmModalShow : false,
+        ConfirmModalOperation : ""
     };
 
     componentDidMount () {
-        if(this.props.UserInfo.HasProposal){
             this.props.GetProposal();
-        }
     }
 
     addProposalClickHandler = () => {
@@ -78,6 +78,24 @@ class StudentCartable extends Component {
                     <Descriptions.Item label="تاریخچه">
                         <Button variant="outline-secondary" onClick={() => {this.setState({HistoryModalShow : true});}}>
                             نمایش
+                        </Button>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="حذف پروپوزال">
+                        <Button variant="danger" onClick={() => {
+                             this.setState({ConfirmModalShow : true ,      
+                                ConfirmModalOperation : 'حذف'
+                            });
+                        }}>
+                            حذف
+                        </Button>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="ارسال پروپوزال" style={{textAlign : 'center'}}>
+                        <Button variant="success" onClick={() => {
+                             this.setState({ConfirmModalShow : true ,
+                                ConfirmModalOperation : 'ارسال'
+                            });
+                        }}>
+                            ارسال
                         </Button>
                     </Descriptions.Item>
                 </Descriptions>
@@ -151,6 +169,30 @@ class StudentCartable extends Component {
                             }) : null}
                         </ListGroup>
                     </Modal.Body>
+                </Modal>
+                <Modal show={this.state.ConfirmModalShow} onHide={() => {this.setState({ConfirmModalShow : false});}}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>تایید عملیات</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{direction : 'rtl', textAlign : 'right'}}>
+                        {"آیا از انجام عملیات " + this.state.ConfirmModalOperation + "  پروپوزال اطمینان دارید؟"}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={() => {this.setState({ConfirmModalShow : false});}}>
+                            انصراف
+                        </Button>
+                        <Button variant="success" onClick={() => {
+                            this.setState({ConfirmModalShow : false});
+                            if(this.state.ConfirmModalOperation === 'حذف'){
+                                this.props.DeleteProposal(this.props.Proposal.ID);
+                            }
+                            else{
+
+                            }
+                            }}>
+                            تایید
+                        </Button>
+                    </Modal.Footer>
                 </Modal>
             </React.Fragment>
         );
@@ -226,7 +268,8 @@ const mapDispatchToProps = dispatch => {
     return {
         LogOutHandler : () => dispatch(Actions.logout()),
         GetUserInfo : (Username) => dispatch(Actions.GetUserInfo(Username)),
-        GetProposal : () => dispatch(Actions.GetProposal())
+        GetProposal : () => dispatch(Actions.GetProposal()),
+        DeleteProposal : (ID) => dispatch(Actions.DeleteProposal(ID , message))
     };
 };
 

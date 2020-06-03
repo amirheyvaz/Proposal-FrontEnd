@@ -6,6 +6,7 @@ import {connect} from 'react-redux';
 import *  as Actions from "../../Store/Actions";
 import * as ActionTypes from "../../Store/Actions/ActionTypes";
 import StudentCartable from './StudentCartable/StudentCartable';
+import ProfessorCartable from './ProfessorCartable/ProfessorCartable';
 
 class Cartable extends Component{
 
@@ -33,7 +34,7 @@ class Cartable extends Component{
         const Cartable = this.props.UserInfo ? (
             this.props.UserInfo.Role == "Student" ? (
                 <StudentCartable />
-            ) : null
+            ) : <ProfessorCartable />
         ) : null;
 
         const RedirectVar = !this.props.isAuthenticated ? (<Redirect to="LogIn" />) : null;
