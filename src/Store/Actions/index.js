@@ -13,3 +13,6 @@ export {
     GetAllResearchTypes,
     SendProposal
 } from "./SubmitProposal";
+export {
+    GetProposal
+} from './Proposal';

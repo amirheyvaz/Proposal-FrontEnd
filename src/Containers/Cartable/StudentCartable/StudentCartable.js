@@ -5,17 +5,157 @@ import Spinner from "../../../Components/Spinner/Spinner";
 import { withRouter , Redirect } from 'react-router-dom';
 import {connect} from 'react-redux';
 import *  as Actions from "../../../Store/Actions";
-import { Col, Row , Container , Card , ListGroup, Button} from 'react-bootstrap';
+import { Col, Row , Container , Card , ListGroup, Button , Modal} from 'react-bootstrap';
+import { Descriptions, Badge } from 'antd';
 
 class StudentCartable extends Component {
     
+    state = {
+        HistoryModalShow : false,
+        KeywordsModalShow : false,
+        CommentModalShow : false
+    };
+
+    componentDidMount () {
+        if(this.props.UserInfo.HasProposal){
+            this.props.GetProposal();
+        }
+    }
+
     addProposalClickHandler = () => {
         this.props.history.push("/SubmitProposal");
     }
 
     render () {
         const RedirectVar = !this.props.isAuthenticated ? (<Redirect to="LogIn" />) : null;
-        const MainCartable = this.props.UserInfo.HasProposal ? null : (
+
+        const RootCartable = (
+            <React.Fragment>
+                <Descriptions className="ant-descriptions-rtl" style={{textAlign : "right"}} title="اطلاعات پروپوزال دانشجو" bordered>
+                    <Descriptions.Item  label="نام">
+                        {this.props.Proposal ? this.props.Proposal.Name : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="نام لاتین">
+                        {this.props.Proposal ? this.props.Proposal.LatinName : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="تاریخ ایجاد">
+                        {this.props.Proposal ? this.props.Proposal.CreateDate : ""}   
+                    </Descriptions.Item>
+                    <Descriptions.Item label="دانشجو ایجاد کننده">
+                        {this.props.Proposal ? this.props.Proposal.StudentFullName : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="نوع تحقیق">
+                        {this.props.Proposal ? this.props.Proposal.ReseachTypeTitle : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="وضعیت پروپوزال">
+                        {this.props.Proposal ? this.props.Proposal.ProposalStatusTitle : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="داور نخست">
+                        {this.props.Proposal ? (this.props.Proposal.FirstJudgeFullName != ""  ? this.props.Proposal.FirstJudgeFullName : "هنوز داوری انتخاب نشده است") : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="داور دوم">
+                        {this.props.Proposal ? (this.props.Proposal.SecondJudgeFullName != ""  ? this.props.Proposal.SecondJudgeFullName : "هنوز داوری انتخاب نشده است") : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="وضعیت کنونی">
+                        {this.props.Proposal ? "در انتظار " + this.props.Proposal.ProposalStageTitle : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="آخرین اقدام">
+                        {this.props.Proposal ? this.props.Proposal.LatestOperation : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="زمان جلسه دفاع">
+                        {this.props.Proposal ? (this.props.Proposal.DefenceMeetingTime != "" ? this.props.Proposal.DefenceMeetingTime: "هنوز تاریخی انتخاب نشده است") : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="کلمات کلیدی">
+                        <Button variant="outline-secondary" onClick={() => {this.setState({KeywordsModalShow : true});}}>
+                            نمایش
+                        </Button>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="نظرات">
+                        <Button variant="outline-secondary" onClick={() => {this.setState({CommentModalShow : true});}}>
+                            نمایش
+                        </Button>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="تاریخچه">
+                        <Button variant="outline-secondary" onClick={() => {this.setState({HistoryModalShow : true});}}>
+                            نمایش
+                        </Button>
+                    </Descriptions.Item>
+                </Descriptions>
+                <Modal  show={this.state.HistoryModalShow} onHide={() => {this.setState({HistoryModalShow : false});}}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>تاریخچه جریان کاری پروپوزال</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <ListGroup>
+                            {this.props.Proposal ? this.props.Proposal.WorkflowHistories.map((p , index) => {
+                                return (
+                                    <ListGroup.Item key={index} style={{textAlign : "right"}}>
+                                        <Descriptions  column={2} className="ant-descriptions-rtl" style={{textAlign : "right"}}  bordered>
+                                            <Descriptions.Item label="اقدام کننده">
+                                                {p.OccuredByPersonName}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="اقدام">
+                                                {p.OperationTitle}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="تاریخ اقدام">
+                                                {p.OccuranceDate}
+                                            </Descriptions.Item>
+                                        </Descriptions>
+                                    </ListGroup.Item>
+                                );
+                            }) : null}
+                        </ListGroup>
+                    </Modal.Body>
+                </Modal>
+                <Modal show={this.state.KeywordsModalShow} onHide={() => {this.setState({KeywordsModalShow : false});}}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>کلمات کلیدی پروپوزال</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <ListGroup  horizontal style={{flexWrap : 'wrap' , direction : 'ltr'}}>
+                            {this.props.Proposal ? this.props.Proposal.Keywords.map((p , index) => {
+                                return (
+                                    <ListGroup.Item key={index} style={{textAlign : "right"}}>
+                                        {p}
+                                    </ListGroup.Item>
+                                );
+                            }) : null}
+                        </ListGroup>
+                    </Modal.Body>
+                </Modal>
+                <Modal show={this.state.CommentModalShow} onHide={() => {this.setState({CommentModalShow : false});}}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>نظرات بر روی پروپوزال</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <ListGroup>
+                            {this.props.Proposal ? this.props.Proposal.Comments.map((p , index) => {
+                                return (
+                                    <ListGroup.Item key={index} style={{textAlign : "right"}}>
+                                        <Descriptions  column={2} className="ant-descriptions-rtl" style={{textAlign : "right"}}  bordered>
+                                            <Descriptions.Item label="ثبت کننده">
+                                                {p.OccuredByPersonTitle}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="ثبت در مرحله">
+                                                {p.StageTitle}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="تاریخ ثبت">
+                                                {p.OccuranceDate}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="درجه اهمیت">
+                                                {p.ImportanceLevel}
+                                            </Descriptions.Item>
+                                        </Descriptions>
+                                    </ListGroup.Item>
+                                );
+                            }) : null}
+                        </ListGroup>
+                    </Modal.Body>
+                </Modal>
+            </React.Fragment>
+        );
+
+        const MainCartable = this.props.UserInfo.HasProposal ? RootCartable : (
             <div style={{
                 textAlign : "center",
                 padding : "5px"
@@ -33,6 +173,7 @@ class StudentCartable extends Component {
                 </div>
             </div>
         );
+
         return (
             <Container className={classes.StudentCartable}>
                 <Row>
@@ -76,14 +217,16 @@ StudentCartable.propTypes = {
 const mapStateToProps = state =>{
     return {
         UserInfo : state.user.UserInfo,
-        isAuthenticated: state.auth.token !== null
+        isAuthenticated: state.auth.token !== null,
+        Proposal : state.Proposal.Proposal
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         LogOutHandler : () => dispatch(Actions.logout()),
-        GetUserInfo : (Username) => dispatch(Actions.GetUserInfo(Username))
+        GetUserInfo : (Username) => dispatch(Actions.GetUserInfo(Username)),
+        GetProposal : () => dispatch(Actions.GetProposal())
     };
 };
 
