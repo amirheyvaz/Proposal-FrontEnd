@@ -2,7 +2,8 @@ import * as actionTypes from '../Actions/ActionTypes';
 
 const initialState = {
     Proposal : null,
-    Proposals : []
+    Proposals : [],
+    ProfessorCartableErrorMassage : null
 };
 
 const reducer = ( state = initialState, action ) => {
@@ -19,6 +20,18 @@ const reducer = ( state = initialState, action ) => {
                 ...state,
                 Proposal : null
             };
+        }
+        case actionTypes.GET_WAITING_PROPOSAL : {
+            return {
+                ...state,
+                Proposals : action.Proposals
+            };
+        }
+        case actionTypes.SET_PROFESSOR_CARTABLE_ERROR_MASSAGE : {
+            return {
+                ...state,
+                ProfessorCartableErrorMassage : action.Massage
+            }
         }
         default:
             return state;

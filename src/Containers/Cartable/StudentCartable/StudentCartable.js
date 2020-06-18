@@ -19,7 +19,7 @@ class StudentCartable extends Component {
     };
 
     componentDidMount () {
-            this.props.GetProposal();
+        this.props.GetProposal();
     }
 
     addProposalClickHandler = () => {
@@ -28,6 +28,9 @@ class StudentCartable extends Component {
 
     render () {
         const RedirectVar = !this.props.isAuthenticated ? (<Redirect to="LogIn" />) : null;
+
+        const Deletable = this.props.Proposal ? this.props.Proposal.Deletable : false;
+        const Sendable = this.props.Proposal ? this.props.Proposal.Sendable : false;
 
         const RootCartable = (
             <React.Fragment>
@@ -81,7 +84,7 @@ class StudentCartable extends Component {
                         </Button>
                     </Descriptions.Item>
                     <Descriptions.Item label="حذف پروپوزال">
-                        <Button variant="danger" onClick={() => {
+                        <Button variant="danger" disabled={!Deletable} onClick={() => {
                              this.setState({ConfirmModalShow : true ,      
                                 ConfirmModalOperation : 'حذف'
                             });
@@ -90,7 +93,7 @@ class StudentCartable extends Component {
                         </Button>
                     </Descriptions.Item>
                     <Descriptions.Item label="ارسال پروپوزال" style={{textAlign : 'center'}}>
-                        <Button variant="success" onClick={() => {
+                        <Button variant="success" disabled={!Sendable} onClick={() => {
                              this.setState({ConfirmModalShow : true ,
                                 ConfirmModalOperation : 'ارسال'
                             });
@@ -187,7 +190,7 @@ class StudentCartable extends Component {
                                 this.props.DeleteProposal(this.props.Proposal.ID);
                             }
                             else{
-
+                                this.props.SendProposal(this.props.Proposal.ID);
                             }
                             }}>
                             تایید
@@ -269,7 +272,8 @@ const mapDispatchToProps = dispatch => {
         LogOutHandler : () => dispatch(Actions.logout()),
         GetUserInfo : (Username) => dispatch(Actions.GetUserInfo(Username)),
         GetProposal : () => dispatch(Actions.GetProposal()),
-        DeleteProposal : (ID) => dispatch(Actions.DeleteProposal(ID , message))
+        DeleteProposal : (ID) => dispatch(Actions.DeleteProposal(ID , message)),
+        SendProposal : (ID) => dispatch(Actions.SendProposalForAction(ID , message))
     };
 };
 

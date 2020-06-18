@@ -15,5 +15,7 @@ export {
 } from "./SubmitProposal";
 export {
     GetProposal,
-    DeleteProposal
+    DeleteProposal,
+    GetProfessorWaitingForActionProposals,
+    SendProposalForAction
 } from './Proposal';

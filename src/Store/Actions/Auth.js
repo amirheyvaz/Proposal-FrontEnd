@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import crypto from 'crypto-js';
 import * as actionTypes from './ActionTypes';
 
 export const authStart = () => {
@@ -43,7 +43,31 @@ export const checkAuthTimeout = (expirationTime) => {
 export const auth = (UserInfo) => {
     return dispatch => {
         dispatch(authStart());
+        // var key = CryptoJS.enc.Utf8.parse('8080808080808080');  
+        // var iv = CryptoJS.enc.Utf8.parse('8080808080808080');  
         
+        // var encryptedlogin = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(UserInfo.Password), key,  
+        //     {
+        //     keySize: 128 / 8,   
+        //     iv: iv,  
+        //     mode: CryptoJS.mode.CBC,  
+        //     padding: CryptoJS.pad.Pkcs7 
+        // });  
+
+        // const encryptionType = 'aes-256-cbc';
+        // const encryptionEncoding = 'base64';
+        // const bufferEncryption = 'utf-8';
+
+        // const Ckey = 'ABCDEFGHJKLMNOPQRSTUVWXYZABCDEF';
+        // const Civ = 'ABCDEFGHIJKLMNOP';
+
+        // const val =  UserInfo.Password;
+        // const key = Buffer.from(Ckey, bufferEncryption);
+        // const iv = Buffer.from(Civ, bufferEncryption);
+        // const cipher = crypto.createCipheriv(encryptionType, key, iv);
+        // let encrypted = cipher.update(val, bufferEncryption, encryptionEncoding);
+        // encrypted += cipher.final(encryptionEncoding);
+
         let url = 'http://localhost:7357/api/Authentication/GetToken/' + UserInfo.Username + '/' + UserInfo.Password;
         
         axios.post(url)

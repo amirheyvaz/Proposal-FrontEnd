@@ -10,12 +10,12 @@ import { Descriptions, Badge , message} from 'antd';
 import { process } from '@progress/kendo-data-query';
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
 
-
 class ProfessorCartable extends Component{
 
-    state = {
-        loading : true
-    };
+
+    componentDidMount () {
+        this.props.GetWaitingProposals();
+    }
 
 
     render (){
@@ -60,6 +60,27 @@ class ProfessorCartable extends Component{
                 break;
             }
         }
+
+        let  SpinnerVar = null;
+        if(this.props.Proposals == null){
+            SpinnerVar = (<Spinner show={true} />);
+        }
+
+        if(this.props.ErrorMassage){
+            message.config({
+                top: 70,
+                duration: 3,
+                maxCount: 3,
+                rtl: true,
+            });
+            message.success( {
+                content: this.props.ErrorMassage,
+                style: {
+                  marginTop: '50px !important',
+                },
+            });
+        }
+
         return (
             <Container className={classes.StudentCartable}>
                 <Row>
@@ -112,6 +133,7 @@ class ProfessorCartable extends Component{
                     
                 </Row>
                 {RedirectVar}
+                {SpinnerVar}
             </Container>
         );
     }
@@ -121,14 +143,16 @@ const mapStateToProps = state =>{
     return {
         isAuthenticated: state.auth.token !== null,
         UserInfo : state.user.UserInfo,
-        Proposals : state.Proposal.Proposals
+        Proposals : state.Proposal.Proposals,
+        ErrorMassage : state.Proposal.ProfessorCartableErrorMassage
     };
 };
 
 const mapDispatchToProps = dispatch => {
     return {
         LogOutHandler : () => dispatch(Actions.logout()),
-        GetUserInfo : (Username) => dispatch(Actions.GetUserInfo(Username))
+        GetUserInfo : (Username) => dispatch(Actions.GetUserInfo(Username)),
+        GetWaitingProposals : () => dispatch(Actions.GetProfessorWaitingForActionProposals())
         //AddIngredientHandler: dispatch(Actions.authStart) ,
         //RemoveIngredientHandler: (IngType) => dispatch({type: actions.REMOVE_INGREDIENT , IngredientType: IngType}) 
     };
