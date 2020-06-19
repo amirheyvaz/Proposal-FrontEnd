@@ -160,11 +160,15 @@ class StudentCartable extends Component {
                                             <Descriptions.Item label="ثبت در مرحله">
                                                 {p.StageTitle}
                                             </Descriptions.Item>
+                                            
                                             <Descriptions.Item label="تاریخ ثبت">
                                                 {p.OccuranceDate}
                                             </Descriptions.Item>
                                             <Descriptions.Item label="درجه اهمیت">
-                                                {p.ImportanceLevel}
+                                                {p.ImportanceLevel ? "بالا" : "پایین"}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="شرح نظر">
+                                                {p.Content}
                                             </Descriptions.Item>
                                         </Descriptions>
                                     </ListGroup.Item>

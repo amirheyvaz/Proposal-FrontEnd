@@ -7,7 +7,8 @@ export {
     authCheckState
 } from "./Auth";
 export {
-    GetUserInfo
+    GetUserInfo,
+    GetAllProfessors
 } from "./User";
 export {
     GetAllResearchTypes,
@@ -17,5 +18,8 @@ export {
     GetProposal,
     DeleteProposal,
     GetProfessorWaitingForActionProposals,
-    SendProposalForAction
+    SendProposalForAction,
+    AssignJudges,
+    ApproveProposal , 
+    RejectProposal
 } from './Proposal';

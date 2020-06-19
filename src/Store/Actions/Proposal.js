@@ -154,3 +154,203 @@ export const SendProposalForAction = (ID , message) => {
             });
     };
 };
+
+export const AssignJudges = (ProposalID, FirstProfesorID , SecondProfessorID , message) => {
+    return dispatch => {
+        let url = 'http://localhost:7357/api/Proposal/AsignJudges/' + ProposalID + "/" + FirstProfesorID + "/"
+            + SecondProfessorID;
+        
+        axios.get(url , {
+            headers : {
+                "Authorization" : "Bearer " + localStorage.getItem("token")
+            }
+        })
+            .then(response => {
+                if(response.data != null && response.data == ''){
+                    message.config({
+                        top: 70,
+                        duration: 3,
+                        maxCount: 3,
+                        rtl: true,
+                    });
+                    message.success( {
+                        content: 'عملیات تعیین داوران با موفقیت انجام شد',
+                        style: {
+                          marginTop: '50px !important',
+                        },
+                    });
+                    dispatch(GetProfessorWaitingForActionProposals());
+                }
+                else
+                {
+                    message.config({
+                        top: 70,
+                        duration: 3,
+                        maxCount: 3,
+                        rtl: true,
+                    });
+                    message.error( {
+                        content: 'عملیات تعیین داوران با خطا رو به رو شد',
+                        style: {
+                          marginTop: '50px !important',
+                        },
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                message.config({
+                    top: 70,
+                    duration: 3,
+                    maxCount: 3,
+                    rtl: true,
+                });
+                message.error(
+                {
+                    content: 'عملیات تعیین داوران با خطا رو به رو شد',
+                    style: {
+                      marginTop: '50px !important',
+                    },
+                }
+                );
+
+            });
+    };
+};
+
+
+export const ApproveProposal = (ProposalID, ProfesorID ,comment, message) => {
+    return dispatch => {
+        let url = 'http://localhost:7357/api/Proposal/ApproveProposal/' + ProposalID + "/" + ProfesorID;
+        
+        axios.post(url ,{
+            Content : comment.Content,
+            ImportanceLevel : comment.ImportanceLevel
+        } , {
+            headers : {
+                "Authorization" : "Bearer " + localStorage.getItem("token")
+            }
+        } 
+        )
+            .then(response => {
+                if(response.data != null && response.data == ''){
+                    message.config({
+                        top: 70,
+                        duration: 3,
+                        maxCount: 3,
+                        rtl: true,
+                    });
+                    message.success( {
+                        content: 'عملیات تایید با موفقیت انجام شد',
+                        style: {
+                          marginTop: '50px !important',
+                        },
+                    });
+                    dispatch(GetProfessorWaitingForActionProposals());
+                }
+                else
+                {
+                    message.config({
+                        top: 70,
+                        duration: 3,
+                        maxCount: 3,
+                        rtl: true,
+                    });
+                    message.error( {
+                        content: 'عملیات تایید با خطا رو به رو شد',
+                        style: {
+                          marginTop: '50px !important',
+                        },
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                message.config({
+                    top: 70,
+                    duration: 3,
+                    maxCount: 3,
+                    rtl: true,
+                });
+                message.error(
+                {
+                    content: 'عملیات تایید با خطا رو به رو شد',
+                    style: {
+                      marginTop: '50px !important',
+                    },
+                }
+                );
+
+            });
+    };
+};
+
+export const RejectProposal = (ProposalID, ProfesorID ,comment, BigChanges , message) => {
+    return dispatch => {
+        let url = 'http://localhost:7357/api/Proposal/RejectProposal/' + ProposalID + "/" + ProfesorID;
+        
+        if(BigChanges != null){
+            url += "/" + BigChanges;
+        }
+
+        axios.post(url ,{
+            Content : comment.Content,
+            ImportanceLevel : comment.ImportanceLevel
+        } , {
+            headers : {
+                "Authorization" : "Bearer " + localStorage.getItem("token")
+            }
+        } 
+        )
+            .then(response => {
+                if(response.data != null && response.data == ''){
+                    message.config({
+                        top: 70,
+                        duration: 3,
+                        maxCount: 3,
+                        rtl: true,
+                    });
+                    message.success( {
+                        content: 'عملیات رد با موفقیت انجام شد',
+                        style: {
+                          marginTop: '50px !important',
+                        },
+                    });
+                    dispatch(GetProfessorWaitingForActionProposals());
+                }
+                else
+                {
+                    message.config({
+                        top: 70,
+                        duration: 3,
+                        maxCount: 3,
+                        rtl: true,
+                    });
+                    message.error( {
+                        content: 'عملیات رد با خطا رو به رو شد',
+                        style: {
+                          marginTop: '50px !important',
+                        },
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                message.config({
+                    top: 70,
+                    duration: 3,
+                    maxCount: 3,
+                    rtl: true,
+                });
+                message.error(
+                {
+                    content: 'عملیات رد با خطا رو به رو شد',
+                    style: {
+                      marginTop: '50px !important',
+                    },
+                }
+                );
+
+            });
+    };
+};

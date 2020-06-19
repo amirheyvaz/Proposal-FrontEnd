@@ -5,24 +5,68 @@ import { withRouter, Redirect } from 'react-router-dom';
 import {connect} from 'react-redux';
 import *  as Actions from "../../../Store/Actions";
 import * as ActionTypes from "../../../Store/Actions/ActionTypes";
-import { Col, Row , Container , Card , ListGroup, Button , Modal} from 'react-bootstrap';
-import { Descriptions, Badge , message} from 'antd';
+import { Col, Row , Container , Card , ListGroup, Button , Modal, NavItem} from 'react-bootstrap';
+import { Descriptions, Badge , message , Select , Input , Radio , Checkbox  } from 'antd';
 import { process } from '@progress/kendo-data-query';
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
+import Alert from '../../../Components/Alert/Alert';
+
+const { Option } = Select; 
+const {TextArea } = Input;
 
 class ProfessorCartable extends Component{
 
 
+    state = {
+        HistoryModalShow : false,
+        KeywordsModalShow : false,
+        CommentModalShow : false,
+        ConfirmModalShow : false,
+        ConfirmModalOperation : "",
+        ProposalKeywords : [],
+        ProposalWorkflowHistories : [],
+        ProposalComments : [],
+        JudgeAssignmentModalShow : false,
+        ProposalID : null,
+        FirstJudgeID : null,
+        SecondJudgeID : null,
+        AlertMessage : '',
+        ProposalStageOrder : null,
+        ProposalComment : '',
+        ProposalBigChanges : false,
+        ProposalCommentImportanceLevel : 0
+    };
+
+
     componentDidMount () {
         this.props.GetWaitingProposals();
+        this.props.GetAllProfessors();
     }
 
+    JudgeAssignmentComboChangeJandler = (value , which) => {
+        switch (which) {
+            case 1 : {
+                this.setState({
+                    FirstJudgeID : value
+                });
+                break;
+            }
+            case 2 : {
+                this.setState({
+                    SecondJudgeID : value
+                });
+                break;
+            }
+        }
+       
+    }
 
     render (){
 
         const RedirectVar = !this.props.isAuthenticated ? (<Redirect to="LogIn" />) : null;
         
         let ProfessorDegreeVar = "";
+        let ColumnsVar = null;
         switch(this.props.UserInfo.ProfessorDegree){
             case 0 :
             {
@@ -32,16 +76,19 @@ class ProfessorCartable extends Component{
             case 1 :
             {
                 ProfessorDegreeVar = "داور";
+                
                 break;
             }
             case 2 :
             {
                 ProfessorDegreeVar = "استاد راهنما";
+               
                 break;
             }
             case 3 :
             {
                 ProfessorDegreeVar = "مدیر گروه";
+                
                 break;
             }
             case 4 :
@@ -52,6 +99,7 @@ class ProfessorCartable extends Component{
             case 5 :
             {
                 ProfessorDegreeVar = "رئیس دانشکده";
+                
                 break;
             } 
             case 6 :
@@ -81,6 +129,19 @@ class ProfessorCartable extends Component{
             });
         }
 
+        const AlertVar = this.state.AlertMessage == '' ? null : 
+            (
+                <div style={{
+                    width : '100%',
+                    textAlign : 'right',
+                    color : 'red',
+                    marginBottom : "10px"
+                }}>
+                    {this.state.AlertMessage}
+                </div>
+            );
+
+
         return (
             <Container className={classes.StudentCartable}>
                 <Row>
@@ -96,7 +157,141 @@ class ProfessorCartable extends Component{
                                 pageable={true}
                                 pageSize={10}
                             >
-                                 <GridColumn field="Name" title="نام"  />
+                                <GridColumn field="RowNumber" width="80px" title="ردیف"  />
+                                <GridColumn field="Name" width="200px" title="نام"  />
+                                <GridColumn field="CreateDate" width="200px" title="تاریخ ایجاد" />
+                                <GridColumn field="StudentFullName" width="200px" title="نام دانشجو" />
+                                <GridColumn field="ProposalStageTitle" width="200px" title="وضعیت فعلی" />
+                                <GridColumn field="ReseachTypeTitle" width="200px" title="نوع تحقیق" />
+                                <GridColumn field="FirstJudgeFullName"  width="200px" title="داور اول" />
+                                <GridColumn field="SecondJudgeFullName" width="200px" title="داور دوم" />
+                                <GridColumn field="LatestOperation" width="200px" title="آخرین اقدام" />
+                                <GridColumn field="ProposalStatusTitle" width="200px" title="وضعیت آموزشی" />
+                                <GridColumn field="DefenceMeetingTime" width="200px" title="زمان جلسه دفاع" />
+                                <GridColumn
+                                    field="Keywords"
+                                    width="100px"
+                                    title="کلمات کلیدی"
+                                    cell={props => (
+                                        <td>
+                                            <Button variant="outline-secondary" onClick={() => {this.setState({KeywordsModalShow : true , ProposalKeywords : props.dataItem[props.field]});}}>
+                                                نمایش
+                                            </Button>
+                                        </td>
+                                    )}
+                                />
+                                <GridColumn
+                                    field="WorkflowHistories"
+                                    title="تاریخچه"
+                                    width="100px"
+                                    cell={props => (
+                                        <td>
+                                            <Button variant="outline-secondary" onClick={() => {this.setState({HistoryModalShow : true , ProposalWorkflowHistories : props.dataItem[props.field]});}}>
+                                                نمایش
+                                            </Button>
+                                        </td>
+                                    )}
+                                />
+                                <GridColumn
+                                    field="Comments"
+                                    title="نظرات"
+                                    width="100px"
+                                    cell={props => (
+                                        <td>
+                                            <Button variant="outline-secondary" onClick={() => {this.setState({CommentModalShow : true , ProposalComments : props.dataItem[props.field]});}}>
+                                                نمایش
+                                            </Button>
+                                        </td>
+                                    )}
+                                />
+                                 <GridColumn
+                                    field="WaitingForJudgeAssignment"
+                                    width="150px"
+                                    title="عملیات تعیین داوران"
+                                    
+                                    cell={props => {
+                                        if(props.dataItem[props.field]){
+                                            return (
+                                                <td style={{textAlign : 'center'}}>
+                                                    <Button variant="outline-primary" onClick={() => {this.setState({JudgeAssignmentModalShow : true  , ProposalID : props.dataItem.ID});}}>
+                                                        تعیین
+                                                    </Button>
+                                                    
+                                                </td>
+                                            );
+                                        }
+                                        else{
+                                            return null;
+                                        }
+                                    } }
+                                />
+                                <GridColumn
+                                    field="WaitingForJudgeApprovement"
+                                    width="250px"
+                                    title="اقدام داوری"
+                                    cell={props => {
+                                        if(props.dataItem[props.field]){
+                                            return (
+                                                <td>
+                                                    <Button style={{marginLeft : '10px'}} variant="outline-success" onClick={() => {this.setState({ConfirmModalShow : true , ConfirmModalOperation : "تایید" , ProposalID : props.dataItem.ID , ProposalStageOrder : props.dataItem.ProposalStageOrder});}}>
+                                                        تایید
+                                                    </Button>
+                                                    <Button variant="outline-danger" onClick={() => {this.setState({ConfirmModalShow : true , ConfirmModalOperation : "رد" , ProposalID : props.dataItem.ID , ProposalStageOrder : props.dataItem.ProposalStageOrder});}}>
+                                                        رد
+                                                    </Button>
+                                                </td>
+                                            );
+                                        }
+                                        else{
+                                            return null;
+                                        }
+                                    } }
+                                />
+                                <GridColumn
+                                    field="WaitingForGuidingProfessorApprovement"
+                                    width="250px"
+                                    title="اقدام استاد راهنما"
+                                    cell={props => {
+                                        if(props.dataItem[props.field]){
+                                            return (
+                                                <td>
+                                                    <Button style={{marginLeft : '10px'}} variant="outline-success" onClick={() => {this.setState({ConfirmModalShow : true , ConfirmModalOperation : "تایید" , ProposalID : props.dataItem.ID, ProposalStageOrder : props.dataItem.ProposalStageOrder});}}>
+                                                        تایید
+                                                    </Button>
+                                                    <Button variant="outline-danger" onClick={() => {this.setState({ConfirmModalShow : true , ConfirmModalOperation : "رد" , ProposalID : props.dataItem.ID, ProposalStageOrder : props.dataItem.ProposalStageOrder});}}>
+                                                        رد
+                                                    </Button>
+                                                </td>
+                                            );
+                                        }
+                                        else{
+                                            return null;
+                                        }
+                                    } }
+                                />
+                                <GridColumn
+                                    field="WaitingForCouncilApprovement"
+                                    width="250px"
+                                    title="اقدام اعضا شورا"
+                                    cell={props => {
+                                        if(props.dataItem[props.field]){
+                                            return (
+                                                <td>
+                                                    <Button style={{marginLeft : '10px'}} variant="outline-success" onClick={() => {this.setState({ConfirmModalShow : true , ConfirmModalOperation : "تایید" , ProposalID : props.dataItem.ID, ProposalStageOrder : props.dataItem.ProposalStageOrder});}}>
+                                                        تایید
+                                                    </Button>
+                                                    <Button variant="outline-danger" onClick={() => {this.setState({ConfirmModalShow : true , ConfirmModalOperation : "رد" , ProposalID : props.dataItem.ID, ProposalStageOrder : props.dataItem.ProposalStageOrder});}}>
+                                                        رد
+                                                    </Button>
+                                                </td>
+                                            );
+                                        }
+                                        else{
+                                            return null;
+                                        }
+                                    } }
+                                />
+                                {ColumnsVar}
                             </Grid>
                         </div>
                     </Col>
@@ -134,6 +329,252 @@ class ProfessorCartable extends Component{
                 </Row>
                 {RedirectVar}
                 {SpinnerVar}
+                <Modal  show={this.state.HistoryModalShow} onHide={() => {this.setState({HistoryModalShow : false});}}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>تاریخچه جریان کاری پروپوزال</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <ListGroup>
+                            {this.state.ProposalWorkflowHistories.length > 0 ? this.state.ProposalWorkflowHistories.map((p , index) => {
+                                return (
+                                    <ListGroup.Item key={index} style={{textAlign : "right"}}>
+                                        <Descriptions  column={2} className="ant-descriptions-rtl" style={{textAlign : "right"}}  bordered>
+                                            <Descriptions.Item label="اقدام کننده">
+                                                {p.OccuredByPersonName}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="اقدام">
+                                                {p.OperationTitle}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="تاریخ اقدام">
+                                                {p.OccuranceDate}
+                                            </Descriptions.Item>
+                                        </Descriptions>
+                                    </ListGroup.Item>
+                                );
+                            }) : null}
+                        </ListGroup>
+                    </Modal.Body>
+                </Modal>
+                <Modal show={this.state.KeywordsModalShow} onHide={() => {this.setState({KeywordsModalShow : false});}}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>کلمات کلیدی پروپوزال</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <ListGroup  horizontal style={{flexWrap : 'wrap' , direction : 'ltr'}}>
+                            {this.state.ProposalKeywords.length > 0 ? this.state.ProposalKeywords.map((p , index) => {
+                                return (
+                                    <ListGroup.Item key={index} style={{textAlign : "right"}}>
+                                        {p}
+                                    </ListGroup.Item>
+                                );
+                            }) : null}
+                        </ListGroup>
+                    </Modal.Body>
+                </Modal>
+                <Modal show={this.state.CommentModalShow} onHide={() => {this.setState({CommentModalShow : false});}}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>نظرات بر روی پروپوزال</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <ListGroup>
+                            {this.state.ProposalComments.length > 0 ? this.state.ProposalComments.map((p , index) => {
+                                return (
+                                    <ListGroup.Item key={index} style={{textAlign : "right"}}>
+                                        <Descriptions  column={2} className="ant-descriptions-rtl" style={{textAlign : "right"}}  bordered>
+                                            <Descriptions.Item label="ثبت کننده">
+                                                {p.OccuredByPersonTitle}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="ثبت در مرحله">
+                                                {p.StageTitle}
+                                            </Descriptions.Item>
+                                            
+                                            <Descriptions.Item label="تاریخ ثبت">
+                                                {p.OccuranceDate}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="درجه اهمیت">
+                                                {p.ImportanceLevel ? "بالا" : "پایین"}
+                                            </Descriptions.Item>
+                                            <Descriptions.Item label="شرح نظر">
+                                                {p.Content}
+                                            </Descriptions.Item>
+                                        </Descriptions>
+                                    </ListGroup.Item>
+                                );
+                            }) : null}
+                        </ListGroup>
+                    </Modal.Body>
+                </Modal>
+                <Modal show={this.state.ConfirmModalShow} onHide={() => {this.setState({ConfirmModalShow : false});}}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>تایید عملیات</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{direction : 'rtl', textAlign : 'right'}}>
+                        <Row>
+                            <div style={{
+                                textAlign : 'right',
+                                marginBottom : '10px',
+                                width : '80%',
+                                marginLeft : 'auto' , 
+                                marginRight : 'auto'
+                            }}>
+                                {"لطفا نظرات خود را در رابطه با این عملیات اعلام بفرمایید"}
+                            </div>
+                        </Row>
+                        <Row style={{marginBottom : '10px' , width :"80%" , marginLeft : 'auto' , marginRight : 'auto'}}>
+                            <TextArea rows={5} onChange={(event) => {
+                                this.setState({ProposalComment : event.target.value});
+                            }} />
+                        </Row>
+                        <Row>
+                            <Col md={4}>
+                                سطح اهمیت
+                            </Col>
+                            <Col md={6}>
+                                    <Radio.Group onChange={(event) => {
+                                        const value = event.target.value;
+                                        this.setState({ProposalCommentImportanceLevel : value});
+                                    }} value={this.state.ProposalCommentImportanceLevel}>
+                                        <Radio value={1}>کم</Radio>
+                                        <Radio value={2}>متوسط</Radio>
+                                        <Radio value={3}>زیاد</Radio>
+                                    </Radio.Group>
+                            </Col>
+                        </Row>
+                        {(this.state.ProposalStageOrder == 6 && this.state.ConfirmModalOperation === 'رد') ? (
+                            <Row>
+                                <Col md={4}>
+                                <div style={{
+                                    textAlign : 'right',
+                                    marginBottom : '10px',
+                                    width : '100%'
+                                }}>
+                                    {"نوع تغییرات مد نظر را وارد کنید"}                
+                                </div>
+                                </Col>
+                                <Col md={4}>
+                                    <Radio.Group onChange={(event) => {
+                                        const value = event.target.value;
+                                        const BC = value == "1" ? true : false;
+                                        this.setState({ProposalBigChanges : BC});
+                                    }} value={this.state.BigChanges ? "1" : "2"}>
+                                        <Radio value={1}>کلی</Radio>
+                                        <Radio value={2}>جزئی</Radio>
+                                    </Radio.Group>
+                                </Col>
+                            </Row>
+                        ) : ""}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={() => {this.setState({ConfirmModalShow : false});}}>
+                            انصراف
+                        </Button>
+                        <Button variant="success" onClick={() => {
+                            this.setState({ConfirmModalShow : false});
+                            if(this.state.ConfirmModalOperation === 'تایید'){
+                                this.props.ApproveProposal(this.state.ProposalID , this.props.UserInfo.ID , {
+                                    Content : this.state.ProposalComment,
+                                    ImportanceLevel :  this.state.ProposalCommentImportanceLevel
+                                });
+                            }
+                            else{
+                                let BG = null;
+                                if(this.state.ProposalStageOrder == 6){
+                                    BG = this.state.ProposalBigChanges;
+                                }
+                                this.props.RejectProposal(this.state.ProposalID , this.props.UserInfo.ID , {
+                                    Content : this.state.ProposalComment,
+                                    ImportanceLevel :  this.state.ProposalCommentImportanceLevel
+                                } , BG );
+                            }
+                            }}>
+                            تایید
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.JudgeAssignmentModalShow} onHide={() => {this.setState({JudgeAssignmentModalShow : false});}}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>تعیین داوران</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{direction : 'rtl', textAlign : 'right'}}>
+                        {AlertVar}
+                        <Row>
+                            <Col md={3}>
+                                داور اول
+                            </Col>
+                            <Col md={6}>
+                                <Select showSearch className="ant-select-rtl" placeholder="استاد را انتخاب کنید" style={{ width: 300 }} onChange={(value) => this.JudgeAssignmentComboChangeJandler(value , 1)}>
+                                    {this.props.AllProfessors.map((p , index) => {
+                                        return (
+                                            <Option value={p.ID} key={index} style={{textAlign : "right"}}>
+                                                {p.Title}
+                                            </Option>
+                                        );
+                                    })}
+                                </Select>
+                            </Col>
+                        </Row>
+                        <Row style={{marginTop : "10px"}}>
+                            <Col md={3}>
+                                داور دوم
+                            </Col>
+                            <Col md={6}>
+                                <Select showSearch  className="ant-select-rtl" placeholder="استاد را انتخاب کنید" style={{ width: 300 }} onChange={(value) => this.JudgeAssignmentComboChangeJandler(value , 2)}>
+                                    {this.props.AllProfessors.map((p , index) => {
+                                        return (
+                                            <Option value={p.ID} key={index} style={{textAlign : "right"}}>
+                                                {p.Title}
+                                            </Option>
+                                        );
+                                    })}
+                                </Select>
+                            </Col>
+                        </Row>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={() => {this.setState({JudgeAssignmentModalShow : false});}}>
+                            انصراف
+                        </Button>
+                        <Button variant="success" onClick={() => {
+                            if(this.state.FirstJudgeID != null && this.state.SecondJudgeID != null){
+                                
+                                this.props.AssignJudges(this.state.ProposalID , this.state.FirstJudgeID , this.state.SecondJudgeID);
+                                
+                                this.setState({JudgeAssignmentModalShow : false,
+                                    FirstJudgeID : null,
+                                    SecondJudgeID : null
+                                });
+                            }
+                            else{
+                                // message.config({
+                                //     top: 70,
+                                //     duration: 3,
+                                //     maxCount: 3,
+                                //     rtl: true
+                                    
+                                // });
+                                // message.warning(
+                                // {
+                                //     content: 'هر دو استاد داور را انتخاب کنید',
+                                //     style: {
+                                //       marginTop: '50px !important',
+                                //     },
+                                // }
+                                // );
+
+                                this.setState({AlertMessage : 'هر دو استاد داور را انتخاب کنید'});
+                                setTimeout(() => {
+                                    this.setState({AlertMessage : ''});
+                                } , 5500);
+                            }
+
+                            
+                            }}>
+                            تایید
+                        </Button>
+                        
+                    </Modal.Footer>
+                </Modal>
+               
             </Container>
         );
     }
@@ -144,7 +585,8 @@ const mapStateToProps = state =>{
         isAuthenticated: state.auth.token !== null,
         UserInfo : state.user.UserInfo,
         Proposals : state.Proposal.Proposals,
-        ErrorMassage : state.Proposal.ProfessorCartableErrorMassage
+        ErrorMassage : state.Proposal.ProfessorCartableErrorMassage,
+        AllProfessors : state.user.Professors
     };
 };
 
@@ -152,7 +594,11 @@ const mapDispatchToProps = dispatch => {
     return {
         LogOutHandler : () => dispatch(Actions.logout()),
         GetUserInfo : (Username) => dispatch(Actions.GetUserInfo(Username)),
-        GetWaitingProposals : () => dispatch(Actions.GetProfessorWaitingForActionProposals())
+        GetWaitingProposals : () => dispatch(Actions.GetProfessorWaitingForActionProposals()),
+        GetAllProfessors : () => dispatch(Actions.GetAllProfessors()),
+        AssignJudges : (ProposalID , FirstPID , SecondPID) => dispatch(Actions.AssignJudges(ProposalID , FirstPID , SecondPID , message)),
+        ApproveProposal : (ProposalID, ProfesorID ,comment) => dispatch(Actions.ApproveProposal(ProposalID, ProfesorID ,comment, message)),
+        RejectProposal : (ProposalID, ProfesorID ,comment, BigChanges) => dispatch(Actions.RejectProposal(ProposalID, ProfesorID ,comment, BigChanges , message))
         //AddIngredientHandler: dispatch(Actions.authStart) ,
         //RemoveIngredientHandler: (IngType) => dispatch({type: actions.REMOVE_INGREDIENT , IngredientType: IngType}) 
     };

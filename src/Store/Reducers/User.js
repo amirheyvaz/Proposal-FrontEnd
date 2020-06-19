@@ -1,7 +1,8 @@
 import * as actionTypes from '../Actions/ActionTypes';
 
 const initialState = {
-    UserInfo : null
+    UserInfo : null,
+    Professors : []
 };
 
 const reducer = ( state = initialState, action ) => {
@@ -11,6 +12,12 @@ const reducer = ( state = initialState, action ) => {
             return {
                 ...state,
                 UserInfo : action.UserInfo
+            };
+        }
+        case actionTypes.GET_ALL_PROFESSORS : {
+            return {
+                ...state,
+                Professors : action.Professors
             };
         }
         default:
