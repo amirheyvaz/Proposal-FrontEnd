@@ -354,3 +354,9 @@ export const RejectProposal = (ProposalID, ProfesorID ,comment, BigChanges , mes
             });
     };
 };
+
+export const AssignDefenceMeetingTime = (ProposalID , Date , Time) => {
+    return dispatch => {
+
+    };
+};

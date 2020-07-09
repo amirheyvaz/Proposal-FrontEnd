@@ -160,7 +160,6 @@ class StudentCartable extends Component {
                                             <Descriptions.Item label="ثبت در مرحله">
                                                 {p.StageTitle}
                                             </Descriptions.Item>
-                                            
                                             <Descriptions.Item label="تاریخ ثبت">
                                                 {p.OccuranceDate}
                                             </Descriptions.Item>

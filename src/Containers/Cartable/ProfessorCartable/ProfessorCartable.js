@@ -6,10 +6,11 @@ import {connect} from 'react-redux';
 import *  as Actions from "../../../Store/Actions";
 import * as ActionTypes from "../../../Store/Actions/ActionTypes";
 import { Col, Row , Container , Card , ListGroup, Button , Modal, NavItem} from 'react-bootstrap';
-import { Descriptions, Badge , message , Select , Input , Radio , Checkbox  } from 'antd';
+import { Descriptions, Badge , message , Select , Input , Radio , Checkbox , TimePicker   } from 'antd';
 import { process } from '@progress/kendo-data-query';
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import Alert from '../../../Components/Alert/Alert';
+import { Calendar, DatePicker } from 'react-persian-datepicker';
 
 const { Option } = Select; 
 const {TextArea } = Input;
@@ -34,7 +35,11 @@ class ProfessorCartable extends Component{
         ProposalStageOrder : null,
         ProposalComment : '',
         ProposalBigChanges : false,
-        ProposalCommentImportanceLevel : 0
+        ProposalCommentImportanceLevel : 0,
+        DefenceModalShow : false,
+        DefenceMeetingTime : "",
+        DefenceMeetingHour : "",
+        DefenceAlert : ''
     };
 
 
@@ -221,7 +226,7 @@ class ProfessorCartable extends Component{
                                             );
                                         }
                                         else{
-                                            return null;
+                                            return (<td></td>);
                                         }
                                     } }
                                 />
@@ -243,7 +248,27 @@ class ProfessorCartable extends Component{
                                             );
                                         }
                                         else{
-                                            return null;
+                                            return (<td></td>);
+                                        }
+                                    } }
+                                />
+                                <GridColumn
+                                    field="WaitingForDefenceMeetingTiming"
+                                    width="250px"
+                                    title="اقدام تعیین جلسه دفاع"
+                                    cell={props => {
+                                        if(props.dataItem[props.field]){
+                                            return (
+                                                <td style={{width : '100%' , textAlign:'center'}}>
+                                                    <Button  variant="outline-primary" onClick={() => {this.setState({DefenceModalShow : true , ProposalID : props.dataItem.ID});}}>
+                                                        تعیین
+                                                    </Button>
+                                                    
+                                                </td>
+                                            );
+                                        }
+                                        else{
+                                            return (<td></td>);
                                         }
                                     } }
                                 />
@@ -265,7 +290,7 @@ class ProfessorCartable extends Component{
                                             );
                                         }
                                         else{
-                                            return null;
+                                            return (<td></td>);
                                         }
                                     } }
                                 />
@@ -287,7 +312,7 @@ class ProfessorCartable extends Component{
                                             );
                                         }
                                         else{
-                                            return null;
+                                            return (<td></td>);
                                         }
                                     } }
                                 />
@@ -574,7 +599,86 @@ class ProfessorCartable extends Component{
                         
                     </Modal.Footer>
                 </Modal>
-               
+                <Modal show={this.state.DefenceModalShow} onHide={() => {this.setState({DefenceModalShow : false});}}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>تعیین زمان جلسه دفاع</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {this.state.DefenceAlert != '' ? (
+                            <Row style={{marginBottom : '10px' , textAlign : 'center' , color : 'red'}}>
+                                {this.state.DefenceAlert}
+                            </Row>
+                        ) : ""}
+                        <Row style={{marginBottom : '10px'}}>
+                            <Col md={3}>
+                                انتخاب تاریخ
+                            </Col>
+                            <Col md={6}>
+                                <DatePicker  value={this.state.DefenceMeetingTime}
+                                    onChange={value => this.setState({ DefenceMeetingTime : value })}
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={3}>
+                                انتخاب ساعت
+                            </Col>
+                            <Col md={6}>
+                                <TimePicker
+                                    onChange={(time , timeString) => {
+                                        this.setState({
+                                            DefenceMeetingHour : timeString
+                                        });
+                                    }}
+                                    format='HH:mm'
+                                />
+                            </Col>
+                        </Row>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={() => {this.setState({DefenceModalShow : false});}}>
+                            انصراف
+                        </Button>
+                        <Button variant="success" onClick={() => {
+                            if(this.state.FirstJudgeID != null && this.state.SecondJudgeID != null){
+                                
+                                
+                                
+                                this.setState({DefenceModalShow : false,
+                                    DefenceMeetingTime : null,
+                                    DefenceMeetingHour : null
+                                });
+                            }
+                            else{
+                                // message.config({
+                                //     top: 70,
+                                //     duration: 3,
+                                //     maxCount: 3,
+                                //     rtl: true
+                                    
+                                // });
+                                // message.warning(
+                                // {
+                                //     content: 'هر دو استاد داور را انتخاب کنید',
+                                //     style: {
+                                //       marginTop: '50px !important',
+                                //     },
+                                // }
+                                // );
+
+                                this.setState({DefenceAlert : 'لطفا تمامی مقادیر را پر کنید'});
+                                setTimeout(() => {
+                                    this.setState({DefenceAlert : ''});
+                                } , 5500);
+                            }
+
+                            
+                            }}>
+                            تایید
+                        </Button>
+                        
+                    </Modal.Footer>
+                </Modal>
             </Container>
         );
     }
