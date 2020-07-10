@@ -104,6 +104,7 @@ export const SendProposalForAction = (ID , message) => {
             .then(response => {
                 if(response.data != null){
                     if(response.data == ''){
+                        debugger;
                         message.config({
                             top: 70,
                             duration: 3,
@@ -355,8 +356,67 @@ export const RejectProposal = (ProposalID, ProfesorID ,comment, BigChanges , mes
     };
 };
 
-export const AssignDefenceMeetingTime = (ProposalID , Date , Time) => {
+export const AssignDefenceMeetingTime = (ProposalID , Date , Time , message) => {
     return dispatch => {
+        let url = 'http://localhost:7357/api/Proposal/AssignDefenceMeetingTime/' + ProposalID + "/" + Date + "/" + Time;
+        
+       
 
+        axios.get(url , {
+            headers : {
+                "Authorization" : "Bearer " + localStorage.getItem("token")
+            }
+        } 
+        )
+            .then(response => {
+                if(response.data != null && response.data){
+                    message.config({
+                        top: 70,
+                        duration: 3,
+                        maxCount: 3,
+                        rtl: true,
+                    });
+                    message.success( {
+                        content: 'عملیات تعیین زمان جلسه با موفقیت انجام شد',
+                        style: {
+                          marginTop: '50px !important',
+                        },
+                    });
+                    dispatch(GetProfessorWaitingForActionProposals());
+                }
+                else
+                {
+                    message.config({
+                        top: 70,
+                        duration: 3,
+                        maxCount: 3,
+                        rtl: true,
+                    });
+                    message.error( {
+                        content: 'عملیات رد با خطا رو به رو شد',
+                        style: {
+                          marginTop: '50px !important',
+                        },
+                    });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                message.config({
+                    top: 70,
+                    duration: 3,
+                    maxCount: 3,
+                    rtl: true,
+                });
+                message.error(
+                {
+                    content: 'عملیات رد با خطا رو به رو شد',
+                    style: {
+                      marginTop: '50px !important',
+                    },
+                }
+                );
+
+            });
     };
 };

@@ -14,7 +14,9 @@ import axios from 'axios';
 class SubmitProposal_Docs extends Component{
 
     state = {
-        Uploaded : false
+        Uploaded : false,
+        File : "",
+        FileID : null
     }
 
     toBase64 = file => new Promise((resolve, reject) => {
@@ -63,14 +65,50 @@ class SubmitProposal_Docs extends Component{
                     </Row>
                     <Row >
                         <Upload 
+                        accept=".pdf"
                         customRequest={
                             async (req) => {
-                                var base64 = await this.toBase64(req.file);
-                                this.props.SetFile(base64);
+                                if(!req.file.name.toLowerCase().includes("pdf")){
+                                    req.onError('Invalid File Type');  
+                                    return;
+                                }
                                 this.setState({
-                                    Uploaded : true
+                                    File : req.file
+                                    // Uploaded : true
                                 });
-                                req.onSuccess();
+                                return new Promise(
+                                    () => {
+                                        const  url = `http://localhost:7357/api/Proposal/UploadProposalFile`;    
+                                        const formData = new FormData(); 
+                                        formData.append('body', req.file); 
+                                        const config = {    
+                                            headers: {    
+                                                    'content-type': 'multipart/form-data',    
+                                                    "Authorization" : "Bearer " + localStorage.getItem("token")
+                                            }  
+                                        };    
+                                        axios.post(url, formData, config).then(
+                                            Response => {
+                                                if(Response.data != null && Response.data != ""){
+                                                    this.setState({
+                                                        Uploaded : true,
+                                                        FileID : Response.data
+                                                    });
+                                                    this.props.SetFileID(Response.data);
+                                                    req.onSuccess();
+                                                }
+                                            }
+                                        ).catch(err => {
+                                            console.log(err);
+                                        });
+                                    }
+                                );
+                                
+                                // var base64 = await this.toBase64(req.file);
+                                // this.props.SetFile(base64);
+                                
+
+                                // req.onSuccess();
                             }
                         } 
                         className={classes.DIVROW}>
@@ -108,7 +146,8 @@ const mapStateToProps = state =>{
 
 const mapDispatchToProps = dispatch => {
     return {
-        SetFile : (base64) => dispatch({type : ActionTypes.SET_FILE , file : base64})
+        SetFile : (base64) => dispatch({type : ActionTypes.SET_FILE , file : base64}),
+        SetFileID : (ID) => dispatch({type : ActionTypes.SET_FILEID , ID : ID})
     };  
 };
 

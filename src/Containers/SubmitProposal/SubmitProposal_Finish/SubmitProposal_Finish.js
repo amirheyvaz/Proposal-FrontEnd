@@ -12,7 +12,7 @@ class SubmitProposal_Finish extends Component{
 
 
     componentDidMount () {
-        this.props.StartSendingInfo(this.props.Proposal_GeneralInfo , this.props.ProposalFile);
+        this.props.StartSendingInfo(this.props.Proposal_GeneralInfo , this.props.ProposalFileID);
     }
 
     render () {
@@ -49,7 +49,7 @@ const mapStateToProps = state =>{
         SendingError : state.SubmitProposal.SendingError,
         SendingPending : state.SubmitProposal.SendingPending,
         Proposal_GeneralInfo : state.SubmitProposal.Proposal_GeneralInfo,
-        ProposalFile : state.SubmitProposal.ProposalFile,
+        ProposalFileID : state.SubmitProposal.ProposalFileID,
     };
 };
 

@@ -20,6 +20,9 @@ const reducer = ( state = initialState, action ) => {
                 Professors : action.Professors
             };
         }
+        case actionTypes.RESET_STATE : {
+            return initialState;
+        }
         default:
             return state;
     }

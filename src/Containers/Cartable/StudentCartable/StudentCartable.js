@@ -6,7 +6,12 @@ import { withRouter , Redirect } from 'react-router-dom';
 import {connect} from 'react-redux';
 import *  as Actions from "../../../Store/Actions";
 import { Col, Row , Container , Card , ListGroup, Button , Modal} from 'react-bootstrap';
-import { Descriptions, Badge , message} from 'antd';
+import { Upload, Descriptions, Badge , message , Button as ANTButton , Input} from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import axios from "axios";
+
+const {TextArea } = Input;
+
 
 class StudentCartable extends Component {
     
@@ -15,7 +20,11 @@ class StudentCartable extends Component {
         KeywordsModalShow : false,
         CommentModalShow : false,
         ConfirmModalShow : false,
-        ConfirmModalOperation : ""
+        ConfirmModalOperation : "",
+        EditModalShow : false,
+        FileUploaded : false,
+        FileID : null,
+        ProposalComment : ""
     };
 
     componentDidMount () {
@@ -31,6 +40,7 @@ class StudentCartable extends Component {
 
         const Deletable = this.props.Proposal ? this.props.Proposal.Deletable : false;
         const Sendable = this.props.Proposal ? this.props.Proposal.Sendable : false;
+        const Editable = this.props.Proposal ? this.props.Proposal.Editable : false;
 
         const RootCartable = (
             <React.Fragment>
@@ -60,13 +70,35 @@ class StudentCartable extends Component {
                         {this.props.Proposal ? (this.props.Proposal.SecondJudgeFullName != ""  ? this.props.Proposal.SecondJudgeFullName : "هنوز داوری انتخاب نشده است") : ""}
                     </Descriptions.Item>
                     <Descriptions.Item label="وضعیت کنونی">
-                        {this.props.Proposal ? "در انتظار " + this.props.Proposal.ProposalStageTitle : ""}
+                        {this.props.Proposal ?  (this.props.Proposal.ProposalStageTitle === "تایید نهایی" ? "تایید نهایی" : "در انتظار " +  this.props.Proposal.ProposalStageTitle) : ""}
                     </Descriptions.Item>
                     <Descriptions.Item label="آخرین اقدام">
                         {this.props.Proposal ? this.props.Proposal.LatestOperation : ""}
                     </Descriptions.Item>
                     <Descriptions.Item label="زمان جلسه دفاع">
                         {this.props.Proposal ? (this.props.Proposal.DefenceMeetingTime != "" ? this.props.Proposal.DefenceMeetingTime: "هنوز تاریخی انتخاب نشده است") : ""}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="مشاهده فایل پروپوزال">
+                        <Button variant="outline-primary" onClick={() => {
+                            axios.get('http://localhost:7357/api/Proposal/DownloadProposalFile/' + this.props.Proposal.ID,{
+                                responseType: 'blob', // important
+                                headers : {
+                                    "Authorization" : "Bearer " + localStorage.getItem("token")
+                                }
+                              }).then((response) => {
+                                const url = window.URL.createObjectURL(new Blob([response.data]));
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', 'file.pdf');
+                                document.body.appendChild(link);
+                                link.click();
+                              })
+                              .catch(er => {
+                                  console.log(er);
+                              });
+                        }}>
+                            دانلود
+                        </Button>                        
                     </Descriptions.Item>
                     <Descriptions.Item label="کلمات کلیدی">
                         <Button variant="outline-secondary" onClick={() => {this.setState({KeywordsModalShow : true});}}>
@@ -81,6 +113,13 @@ class StudentCartable extends Component {
                     <Descriptions.Item label="تاریخچه">
                         <Button variant="outline-secondary" onClick={() => {this.setState({HistoryModalShow : true});}}>
                             نمایش
+                        </Button>
+                    </Descriptions.Item>
+                    <Descriptions.Item label="ویرایش پروپوزال">
+                        <Button variant="info" disabled={!Editable} onClick={() => {
+                             this.setState({EditModalShow : true});
+                        }}>
+                            ویرایش
                         </Button>
                     </Descriptions.Item>
                     <Descriptions.Item label="حذف پروپوزال">
@@ -192,11 +231,111 @@ class StudentCartable extends Component {
                             if(this.state.ConfirmModalOperation === 'حذف'){
                                 this.props.DeleteProposal(this.props.Proposal.ID);
                             }
-                            else{
+                            else if (this.state.ConfirmModalOperation === 'ارسال') {
                                 this.props.SendProposal(this.props.Proposal.ID);
                             }
+                            else{
+
+                            }
+
                             }}>
                             تایید
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={this.state.EditModalShow} onHide={() => {this.setState({EditModalShow : false});}}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>ویرایش پروپوزال</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body style={{direction : 'rtl', textAlign : 'right'}}>
+                            <Container>
+                                <Row style={{textAlign : 'center' , marginBottom : '10px' , width :"80%" , marginLeft : 'auto' , marginRight : 'auto'}}>
+                                    <Upload 
+                                        accept=".pdf"
+                                        customRequest={
+                                            async (req) => {
+                                                if(!req.file.name.toLowerCase().includes("pdf")){
+                                                    req.onError('Invalid File Type');  
+                                                    return;
+                                                }
+                                                this.setState({
+                                                    File : req.file
+                                                    // Uploaded : true
+                                                });
+                                                return new Promise(
+                                                    () => {
+                                                        const  url = `http://localhost:7357/api/Proposal/UploadProposalFile`;    
+                                                        const formData = new FormData(); 
+                                                        formData.append('body', req.file); 
+                                                        const config = {    
+                                                            headers: {    
+                                                                    'content-type': 'multipart/form-data',    
+                                                                    "Authorization" : "Bearer " + localStorage.getItem("token")
+                                                            }  
+                                                        };    
+                                                        axios.post(url, formData, config).then(
+                                                            Response => {
+                                                                if(Response.data != null && Response.data != ""){
+                                                                    this.setState({
+                                                                        FileUploaded : true,
+                                                                        FileID : Response.data
+                                                                    });
+                                                                    req.onSuccess();
+                                                                }
+                                                            }
+                                                        ).catch(err => {
+                                                            console.log(err);
+                                                        });
+                                                    }
+                                                );
+                                                
+                                                // var base64 = await this.toBase64(req.file);
+                                                // this.props.SetFile(base64);
+                                                
+
+                                                // req.onSuccess();
+                                            }
+                                        } 
+                                        className={classes.DIVROW}>
+                                            <ANTButton>
+                                                <UploadOutlined /> برای بارگذاری کلیک کنید
+                                            </ANTButton>
+                                    </Upload>
+                                </Row>
+                                <Row>
+                                    <div style={{
+                                        textAlign : 'right',
+                                        marginBottom : '10px',
+                                        width : '80%',
+                                        marginLeft : 'auto' , 
+                                        marginRight : 'auto'
+                                    }}>
+                                        {"لطفا نظرات و تغییرات خود را در رابطه با این عملیات اعلام بفرمایید"}
+                                    </div>
+                                </Row>
+                                <Row style={{marginBottom : '10px' , width :"80%" , marginLeft : 'auto' , marginRight : 'auto'}}>
+                                    <TextArea rows={5} onChange={(event) => {
+                                        this.setState({ProposalComment : event.target.value});
+                                    }} />
+                                </Row>
+                            </Container>
+
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={() => {this.setState({EditModalShow : false});}}>
+                            انصراف
+                        </Button>
+                        <Button variant="success" disabled={!this.state.FileUploaded || this.state.ProposalComment === ""} onClick={() => {
+                            this.props.EditProposal(this.state.FileID, this.props.Proposal.ID , this.state.ProposalComment);
+                            this.setState({
+                                EditModalShow : false,
+                                FileID : null,
+                                FileUploaded : false,
+                                ProposalComment : ''
+                            });
+
+                            }}>
+                            ثبت
                         </Button>
                     </Modal.Footer>
                 </Modal>
@@ -276,7 +415,8 @@ const mapDispatchToProps = dispatch => {
         GetUserInfo : (Username) => dispatch(Actions.GetUserInfo(Username)),
         GetProposal : () => dispatch(Actions.GetProposal()),
         DeleteProposal : (ID) => dispatch(Actions.DeleteProposal(ID , message)),
-        SendProposal : (ID) => dispatch(Actions.SendProposalForAction(ID , message))
+        SendProposal : (ID) => dispatch(Actions.SendProposalForAction(ID , message)),
+        EditProposal : (ID , ProposalID , ProposalComment) => dispatch(Actions.EditProposal(ID , ProposalID , message , ProposalComment))
     };
 };
 

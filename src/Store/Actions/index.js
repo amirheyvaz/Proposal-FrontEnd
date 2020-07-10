@@ -12,7 +12,8 @@ export {
 } from "./User";
 export {
     GetAllResearchTypes,
-    SendProposal
+    SendProposal,
+    EditProposal
 } from "./SubmitProposal";
 export {
     GetProposal,
@@ -21,5 +22,6 @@ export {
     SendProposalForAction,
     AssignJudges,
     ApproveProposal , 
-    RejectProposal
+    RejectProposal,
+    AssignDefenceMeetingTime
 } from './Proposal';

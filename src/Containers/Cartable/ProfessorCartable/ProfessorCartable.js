@@ -6,11 +6,13 @@ import {connect} from 'react-redux';
 import *  as Actions from "../../../Store/Actions";
 import * as ActionTypes from "../../../Store/Actions/ActionTypes";
 import { Col, Row , Container , Card , ListGroup, Button , Modal, NavItem} from 'react-bootstrap';
-import { Descriptions, Badge , message , Select , Input , Radio , Checkbox , TimePicker   } from 'antd';
+import { Descriptions, Badge , message , Select , Input , Radio , Checkbox , Button as ANTButton , TimePicker  , DatePicker , Upload  } from 'antd';
 import { process } from '@progress/kendo-data-query';
 import { Grid, GridColumn } from '@progress/kendo-react-grid';
 import Alert from '../../../Components/Alert/Alert';
-import { Calendar, DatePicker } from 'react-persian-datepicker';
+import { UploadOutlined } from '@ant-design/icons';
+import axios from "axios";
+// import { Calendar, DatePicker } from 'react-persian-datepicker';
 
 const { Option } = Select; 
 const {TextArea } = Input;
@@ -173,6 +175,38 @@ class ProfessorCartable extends Component{
                                 <GridColumn field="LatestOperation" width="200px" title="آخرین اقدام" />
                                 <GridColumn field="ProposalStatusTitle" width="200px" title="وضعیت آموزشی" />
                                 <GridColumn field="DefenceMeetingTime" width="200px" title="زمان جلسه دفاع" />
+                                <GridColumn field="LatinName"  width="150px" title="فایل پروپوزال" 
+                                    cell={
+                                        props => (
+                                            <td style={{
+                                                textAlign : 'center',
+                                                width : '90%',
+                                                margin : 'auto'
+                                            }}>
+                                                <Button variant="outline-primary" onClick={() => {
+                                                    axios.get('http://localhost:7357/api/Proposal/DownloadProposalFile/' + props.dataItem.ID,{
+                                                        responseType: 'blob', // important
+                                                        headers : {
+                                                            "Authorization" : "Bearer " + localStorage.getItem("token")
+                                                        }
+                                                      }).then((response) => {
+                                                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                                                        const link = document.createElement('a');
+                                                        link.href = url;
+                                                        link.setAttribute('download', 'file.pdf');
+                                                        document.body.appendChild(link);
+                                                        link.click();
+                                                      })
+                                                      .catch(er => {
+                                                          console.log(er);
+                                                      });
+                                                }}>
+                                                    دانلود
+                                                </Button>
+                                            </td>
+                                        )
+                                    }
+                                />
                                 <GridColumn
                                     field="Keywords"
                                     width="100px"
@@ -235,7 +269,7 @@ class ProfessorCartable extends Component{
                                     width="250px"
                                     title="اقدام داوری"
                                     cell={props => {
-                                        if(props.dataItem[props.field]){
+                                        if(props.dataItem[props.field] || props.dataItem["WaitingForDefenceMeetingJudgement"]){
                                             return (
                                                 <td>
                                                     <Button style={{marginLeft : '10px'}} variant="outline-success" onClick={() => {this.setState({ConfirmModalShow : true , ConfirmModalOperation : "تایید" , ProposalID : props.dataItem.ID , ProposalStageOrder : props.dataItem.ProposalStageOrder});}}>
@@ -614,8 +648,8 @@ class ProfessorCartable extends Component{
                                 انتخاب تاریخ
                             </Col>
                             <Col md={6}>
-                                <DatePicker  value={this.state.DefenceMeetingTime}
-                                    onChange={value => this.setState({ DefenceMeetingTime : value })}
+                                <DatePicker
+                                    onChange={(date,value) => this.setState({ DefenceMeetingTime : value })}
                                 />
                             </Col>
                         </Row>
@@ -640,9 +674,9 @@ class ProfessorCartable extends Component{
                             انصراف
                         </Button>
                         <Button variant="success" onClick={() => {
-                            if(this.state.FirstJudgeID != null && this.state.SecondJudgeID != null){
+                            if(this.state.DefenceMeetingTime != null && this.state.DefenceMeetingHour != null){
                                 
-                                
+                                this.props.AssignDefenceMeetingTime(this.state.ProposalID , this.state.DefenceMeetingTime , this.state.DefenceMeetingHour);
                                 
                                 this.setState({DefenceModalShow : false,
                                     DefenceMeetingTime : null,
@@ -702,7 +736,8 @@ const mapDispatchToProps = dispatch => {
         GetAllProfessors : () => dispatch(Actions.GetAllProfessors()),
         AssignJudges : (ProposalID , FirstPID , SecondPID) => dispatch(Actions.AssignJudges(ProposalID , FirstPID , SecondPID , message)),
         ApproveProposal : (ProposalID, ProfesorID ,comment) => dispatch(Actions.ApproveProposal(ProposalID, ProfesorID ,comment, message)),
-        RejectProposal : (ProposalID, ProfesorID ,comment, BigChanges) => dispatch(Actions.RejectProposal(ProposalID, ProfesorID ,comment, BigChanges , message))
+        RejectProposal : (ProposalID, ProfesorID ,comment, BigChanges) => dispatch(Actions.RejectProposal(ProposalID, ProfesorID ,comment, BigChanges , message)),
+        AssignDefenceMeetingTime : (ProposalID , Date , Time ) => dispatch(Actions.AssignDefenceMeetingTime(ProposalID , Date , Time , message))
         //AddIngredientHandler: dispatch(Actions.authStart) ,
         //RemoveIngredientHandler: (IngType) => dispatch({type: actions.REMOVE_INGREDIENT , IngredientType: IngType}) 
     };
